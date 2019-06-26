@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>::DPDHL-WMS::</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/dd.css">
+    <link rel="stylesheet" type="text/css" href="css/themes/default.css" id="skin-switcher">
+    <link rel="stylesheet" type="text/css" href="css/responsive.css">
+
+
+
+
+
+    <!-- STYLESHEETS -->
+    <!--[if lt IE 9]><script src="js/flot/excanvas.min.js"></script><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script><![endif]-->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'> -->
+
+</head>
+
+<body>
+    <header class="navbar clearfix" id="header">
+        <div class="container" style="padding: 0px !important">
+            <div class="navbar-brand">
+                <a href="index.html">
+                    <img src="images/dhl_logo.png" alt="DPDHL Logo" class="img-responsive" width="124" height="30">
+                </a>
+                <div class="visible-xs">
+                    <a href="#" class="team-status-toggle switcher btn dropdown-toggle">
+                        <i class="fa fa-users"></i>
+                    </a>
+                </div>
+                <div class="visible-xs">
+                    <a href="#" class=" switcher chart btn dropdown-toggle">
+                        <i class="fa fa-bar-chart-o"></i>
+                    </a>
+                </div>
+                <div class="visible-xs">
+                    <a href="#" class=" switcher admin btn dropdown-toggle">
+                        <i class="fa fa-user-md"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-12 menubar">
+                <li class="col-md-1 menu-div" >
+                    <a href="./index.html">Associations<a />
+                </li>
+                <li class="col-md-1 menu-div" style="border-bottom: 3px solid #ffcc00;">
+                    <a href="./business.html">Business Units</a>
+                </li>
+                <li class="col-md-1 menu-div">
+                    <a href="./applications.html">Applications</a>
+                </li>
+                <li class="col-md-1 menu-div">
+                    <a href="./device.html">Devices</a>
+                </li>
+                <li class="col-md-1 menu-div">
+                    <a href="./users.html">Users</a>
+                </li>
+                <li class="col-md-1 menu-div">
+                    <a href="./facilities.html">Facilities</a>
+                </li>
+                <li class="col-md-1 menu-div">
+                    <a href="./locations.html">Locations</a>
+                </li>
+                <li class="col-md-1 menu-div">
+                    <a href="./others.html">Others</a>
+                </li>
+                <li class="col-md-1 menu-div">
+                    <a href="./reports.html">Reports</a>
+                </li>
+                <li class="col-md-1 menu-div">
+                    <a href="./logs.html">Logs</a>
+                </li>
+            </div>
+        </div>
+    </header>
+    <section>
+        <div id="main">
+            <div class="col-md-12 title">
+                <div class="col-md-6 lefttitle">
+                    All Business Units
+                </div>
+                <div class="col-md-6 righttitle">
+                    <span data-toggle="modal" data-target="#entity"><i class="fa fa-plus icons"></i></span>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div id="demo"></div>
+            </div>
+        </div>
+        <!--     -->
+        <div id="entity" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Create Business Unit</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post">
+                            <div class="input-group">
+                                <input type="text" id="name" class="form-control" placeholder="Business unit name"
+                                    aria-describedby="basic-addon1">
+                            </div>
+                            <div class="input-group">
+                                <input type="text" id="armtemplates" class="form-control" placeholder="Discription "
+                                    aria-describedby="basic-addon1">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-default" id="save-list">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script src="js/jquery.cookie.min.js"></script>
+    <script src="js/jquery.nestable.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.slimscroll.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/script.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            App.setPage("index"); //Set current page
+            App.init(); //Initialise plugins and elements
+            $('.dropdown-submenu a.test').on("click", function (e) {
+                $(this).next('ul').toggle();
+                e.stopPropagation();
+                e.preventDefault();
+            });
+
+        });
+
+
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "300px";
+            document.getElementById("main").style.marginRight = "300px";
+            document.getElementById("main").style.marginTop = "0px";
+            document.getElementById("hammr").style.display = "none";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+            document.getElementById("main").style.marginRight = "0";
+            document.getElementById("main").style.marginTop = "0px";
+            document.getElementById("hammr").style.display = "block";
+
+        }
+        $(function () {
+            $('#myTab a:last').tab('show');
+            $('#Indivi_item_scroll').slimscroll({
+                height: '150px'
+            });
+            // $('#testDivNested').slimscroll({
+            //     width: '300px',
+            //     height: '200px'
+            // }).parent().css({
+            //     'float': 'left',
+            //     'margin': '0 10px 10px 0'
+            // });
+
+        });
+    </script>
+
+    <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
+        div#demo {
+            padding: 10px;
+            margin-top: 50px;
+        }
+
+        th {
+            background: #453f2b;
+            text-align: center;
+            color: #ffcc00;
+        }
+    </style>
+
+</body>
+
+</html>
