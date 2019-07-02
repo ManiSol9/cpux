@@ -5,55 +5,81 @@ $(document).ready(function () {
     const armtemplates = document.getElementById('armtemplates');
     
 
-    //localStorage.setItem('associateddevices', []);
-    associateddevices = localStorage.getItem('associateddevices') ? JSON.parse(localStorage.getItem('associateddevices')) : [];
-    business_units = localStorage.getItem('business_units') ? JSON.parse(localStorage.getItem('business_units')) : [];
-    applications = localStorage.getItem('applications') ? JSON.parse(localStorage.getItem('applications')) : [];
+    getDevices();
 
-    console.log(associateddevices)
+    function getDevices(){
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "https://dive11.azurewebsites.net/api/beta/devices/getDevices",
+            "method": "POST",
+            "headers": {
+                "content-type": "application/json",
+                "cache-control": "no-cache",
+                "postman-token": "0146efcb-e86f-0ff0-d4ea-d8647cbbfd33"
+            },
+            "processData": false,
+            "data": "{\n\t\"pageNumber\": 1,\n\t\"pageSize\": 10,\n\t\"search\": null,\n\t\"sortColumn\": \"device_name\",\n\t\"sortType\": 0\n}"
+        }
     
-    if(associateddevices.length>0) { 
-        generateTable(); 
+        $.ajax(settings).done(function (response) {
+            console.log(response, "device");
+    
+            devices = response.result
+    
+            associateddevices = devices.data
+    
+            generateTable();
+    
+        });
     }
-    generateSelect();
-    //generateSelect2()
+
 
     function generateTable(){
         var txt='';
 
         myObj = associateddevices;
-        txt += "<table border='1'><tr><th> Device ID </th><th> Device Name </th><th> Device Type </th><th> Device Vendor </th><th> Protocol </th><th> Application </th> <th> BU </th><th>Health Status</th><th> Battery Power</th> <th> On Boarded By</th> <th> Device Owner </th> <th>Actions</th></tr>"
+        txt += "<table border='1'><tr><th> Device ID </th><th> Device Name </th><th> Device Address </th><th> Protocol </th><th>Health Status</th><th> Battery Power</th> <th> On Boarded By</th> <th> Device Owner </th> <th>Actions</th></tr>"
         for (x in myObj) {
-          txt += "<tr><td>" + myObj[x].deviceId + "</td><td>" + myObj[x].name + "</td><td>" + myObj[x].deviceType + "</td><td>" + myObj[x].deviceVendor + "</td><td>" + myObj[x].protocol + "</td>";
-          txt += "<td>" + myObj[x].appname + "</td><td>" + myObj[x].bu + "</td><td>" + myObj[x].heathStatus + "</td><td>" + myObj[x].batteryPower + "</td><td>" + myObj[x].created_by + "</td><td>" + myObj[x].created_by + "</td><td>";
+          txt += "<tr><td>" + myObj[x].dhl_device_id + "</td><td>" + myObj[x].device_name + "</td><td>" + myObj[x].mac_address + "</td><td>" + myObj[x].protocol + "</td>";
+          txt += "<td>" + myObj[x].device_health + "</td><td>" + myObj[x].power_type + "</td><td>" + myObj[x].device_owner + "</td><td>" + myObj[x].onboarded_date + "</td><td>";
           txt += "<span onclick='deletebu("+x+")' class='glyphicon glyphicon-trash' aria-hidden='true'></span></td></tr>";
         }
         txt += "</table>"    
         document.getElementById("demo").innerHTML = txt;
     }
 
-    function generateSelect(){
-        var txt = '<select id="businessId" onchange="showapps()" class="form-control">';
-        myObj = business_units;
-        for(x in myObj){
-            txt +='<option value="'+ myObj[x].name +'">'+ myObj[x].name +'</option>';
-        }
-        txt += "</select>";
-        document.getElementById("selectbu").innerHTML = txt;
+
+    var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "https://dive11.azurewebsites.net/api/beta/applications/getApplications",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "cache-control": "no-cache",
+            "postman-token": "0146efcb-e86f-0ff0-d4ea-d8647cbbfd33"
+        },
+        "processData": false,
+        "data": "{\n\t\"pageNumber\": 1,\n\t\"pageSize\": 10,\n\t\"search\": null,\n\t\"sortColumn\": \"name\",\n\t\"sortType\": 0\n}"
     }
 
-    showapps = (e) => {
-        generateSelect2(businessId.value)
-        console.log(applications)
-    }
+    $.ajax(settings).done(function (response) {
+        console.log(response, "app");
 
-    function generateSelect2(bu){
+        apps = response.result
+
+        applications = apps.data
+
+        generateSelect2()
+
+    });
+
+    function generateSelect2(){
         var txt = '<select  id="appId" class="form-control">';
         myObj = applications;
         for(x in myObj){
-            if(myObj[x].bu == bu) {
-                txt +='<option value="'+ myObj[x].name +'">'+ myObj[x].name +'</option>';
-            }
+                txt +='<option value="'+ myObj[x].id +'">'+ myObj[x].name +'</option>';
         }
         txt += "</select>";
         document.getElementById("selectapp").innerHTML = txt;
@@ -83,35 +109,61 @@ $(document).ready(function () {
     $('#save-list').on('click', function (e) {
 
 
-        if(deviceId.value == "" || deviceName.value == "" || deviceType.value == "" || deviceVendor.value == "" || protocol.value == "" || businessId == ""){
+        if( deviceId.value == "" || 
+            deviceName.value == "" || 
+            deviceUUID.value == "" || 
+            serialnumber.value == "" || 
+            protocol.value == "" || 
+            deviceHealth.value == "" ||
+            macaddress.value == "" ||
+            powertype.value == "" ||
+            iotready.value == "" ||
+            appId.value == ""){
             alert("Please enter values")
         } else {
 
             e.preventDefault();
 
-            var today = new Date();
-            var date = today.getFullYear()+'/'+(today.getMonth()+1)+'/'+today.getDate();
-            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-            var dateTime = date+' '+time;   
-            const businessId = document.getElementById('businessId')         
-            var buObject = {
-                "deviceId": deviceId.value,
-                "name": deviceName.value,
-                "deviceType": deviceType.value,
-                "deviceVendor": deviceVendor.value,
-                "protocol": protocol.value,
-                "bu": businessId.value,
-                "appname": appId.value,
-                "created_at": dateTime,
-                "created_by": "Manikanta",
-                "heathStatus": false,
-                "batteryPower": "10%",
-                "deviceOwner": "Mani"        
+            let deviceAdd = {
+                "dhlDeviceID" : deviceId.value,
+                "uuID": deviceUUID.value,
+                "serialNumber" : serialnumber.value,
+                "macAddress" : macaddress.value,
+                "deviceName" : deviceName.value,
+                "protocol" : protocol.value,
+                "deviceHealth" : deviceHealth.value,
+                "onboardedBy" : "mani",
+                "deviceOwner" : "tina",
+                "powerType" : powertype.value,
+                "appID" : appId.value,
+                "iotReady" : iotready.value == "0" ? true : false,
+                "deviceSpecID" : 1
             }
-            associateddevices.push(buObject)
-            localStorage.setItem('associateddevices', JSON.stringify(associateddevices));
-            generateTable();
-            $("#entity").modal('hide');			
+
+            var settings = {
+                "async": true,
+                "crossDomain": true,
+                "url": "https://dive11.azurewebsites.net/api/beta/devices/createDevice",
+                "method": "POST",
+                "headers": {
+                    "content-type": "application/json",
+                    "cache-control": "no-cache",
+                    "postman-token": "0146efcb-e86f-0ff0-d4ea-d8647cbbfd33"
+                },
+                "processData": false,
+                "data": JSON.stringify(deviceAdd)
+            }
+        
+            $.ajax(settings).done(function (response) {
+                console.log(response, "deviceadd");
+
+                if(response.status == 200){
+                    alert("Created Successfully");
+                    getDevices();
+                    $("#entity").modal('hide');	
+                }
+            });
+
         }
     });
 

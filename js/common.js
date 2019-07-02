@@ -2,47 +2,52 @@ $(document).ready(function () {
 
     const form = document.querySelector('form');
     const name = document.getElementById('name');
-	const armtemplates = document.getElementById('armtemplates');
+    const armtemplates = document.getElementById('armtemplates');
 
-    var business_units = [
-        {
-            "name": "GUI",
-            "created_at": "2018/09/10 10:30:33AM",
-            "created_by": "Manikanta",
-            "status": true,
-            "armtemplates": "",
-            "id": 1,
-            "value": "B"
-        },
-        {
-            "name": "CSA",
-            "created_at": "2018/09/10 10:30:33AM",
-            "created_by": "Manikanta",
-            "status": true,
-            "armtemplates": "",
-            "id": 2,
-            "value": "B"
+    var bu = {}
+
+    fetchBU();
+
+    function fetchBU(){
+
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "https://dive11.azurewebsites.net/api/beta/businessunits/getAllBusinessUnits",
+            "method": "GET",
+            "headers": {
+                "content-type": "application/json",
+                "cache-control": "no-cache",
+                "postman-token": "0146efcb-e86f-0ff0-d4ea-d8647cbbfd33"
+            },
+            "processData": false
         }
-    ]
+    
+        $.ajax(settings).done(function (response) {
+            console.log(response, "bus");
+    
+            bu = response.result
+    
+            business_units = bu
+    
+            generateTable();
+    
+        });
+    
 
-    //localStorage.setItem('business_units', JSON.stringify(business_units));
+    }
 
-    business_units = localStorage.getItem('business_units') ? JSON.parse(localStorage.getItem('business_units')) : [];
-
-
-    generateTable();
-
-    function generateTable(){
-        var txt='';
+    function generateTable() {
+        var txt = '';
 
         myObj = business_units;
         txt += "<table border='1'><tr><th> Business Name </th><th> Created On </th><th> Created By</th><th>Actions</th></tr>"
         for (x in myObj) {
-          txt += "<tr><td>" + myObj[x].name + "</td><td>" + myObj[x].created_at + "</td><td>" + myObj[x].created_by + "</td>";
-          txt += "<td><span onclick='showbu()' class='glyphicon glyphicon-info-sign' aria-hidden='true'></span>&nbsp;&nbsp;";
-          txt += "<span onclick='deletebu()' class='glyphicon glyphicon-trash' aria-hidden='true'></span></td></tr>";
+            txt += "<tr><td>" + myObj[x].name + "</td><td>" + myObj[x].created_by + "</td><td>" + myObj[x].created_date + "</td>";
+            txt += "<td><span onclick='showbu()' class='glyphicon glyphicon-info-sign' aria-hidden='true'></span>&nbsp;&nbsp;";
+            txt += "<span onclick='deletebu()' class='glyphicon glyphicon-trash' aria-hidden='true'></span></td></tr>";
         }
-        txt += "</table>"    
+        txt += "</table>"
         document.getElementById("demo").innerHTML = txt;
     }
 
@@ -57,34 +62,46 @@ $(document).ready(function () {
 
     $('#save-list').on('click', function (e) {
 
-        if(name.value == "" || armtemplates.value == ""){
+        if (name.value == "" || description.value == "" || shortname.value == "" || owner.value == "") {
 
-            //$("#entity").modal('hide');	
-            
             alert("Please enter values")
-
 
         } else {
 
-            var today = new Date();
-            var date = today.getFullYear()+'/'+(today.getMonth()+1)+'/'+today.getDate();
-            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-            var dateTime = date+' '+time;            
 
             var buObject = {
                 "name": name.value,
-                "created_at": dateTime,
-                "created_by": "Manikanta",
-                "status": true ,
-                "armtemplates": armtemplates.value          
+                "shortName": shortname.value,
+                "description": description.value,
+                "owner": owner.value,
+                "createdBy": "Mani",
+                "userGroup": "",
+                "imgName": ""
             }
 
-            business_units.push(buObject)
-            localStorage.setItem('business_units', JSON.stringify(business_units));
+            var settings = {
+                "async": true,
+                "crossDomain": true,
+                "url": "https://dive11.azurewebsites.net/api/beta/businessunits/createBusinessUnit",
+                "method": "POST",
+                "headers": {
+                    "content-type": "application/json",
+                    "cache-control": "no-cache",
+                    "postman-token": "0146efcb-e86f-0ff0-d4ea-d8647cbbfd33"
+                },
+                "processData": false,
+                "data": JSON.stringify(buObject)
+            }
+        
+            $.ajax(settings).done(function (response) {
+                console.log(response, "deviceadd");
 
-            generateTable();
-
-            $("#entity").modal('hide');			
+                if(response.status == 200){
+                    alert("Created Successfully");
+                    fetchBU();
+                    $("#entity").modal('hide');	
+                }
+            });  
 
 
         }
@@ -96,4 +113,4 @@ $(document).ready(function () {
 
 });
 
-	
+

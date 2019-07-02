@@ -4,86 +4,85 @@ $(document).ready(function () {
     const name = document.getElementById('name');
     const armtemplates = document.getElementById('armtemplates');
     
+    fetchUsers()
 
-    var users = [
-        {
-            "name": "Manikanta",
-            "bu": "GUI",
-            "appname": "Track",
-            "role": "",
-            "email": "",
-            "contact": "",
-            "created_at": "2018/09/10 10:30:33AM",
-            "created_by": "Manikanta",
-            "status": true,
-            "armtemplates": "",
-            "id": 1,
-            "value": "U"
-        },
-        {
-            "name": "Krishna",
-            "bu": "CSA",
-            "appname": "Trace",
-            "role": "",
-            "email": "",
-            "contact": "",
-            "created_at": "2018/09/10 10:30:33AM",
-            "created_by": "Manikanta",
-            "status": true,
-            "armtemplates": "",
-            "id": 2,
-            "value": "U"
+    function fetchUsers(){
+
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "https://dive11.azurewebsites.net/api/beta/users/getUsers",
+            "method": "POST",
+            "headers": {
+                "content-type": "application/json",
+                "cache-control": "no-cache",
+                "postman-token": "0146efcb-e86f-0ff0-d4ea-d8647cbbfd33"
+            },
+            "processData": false,
+            "data": "{\n\t\"pageNumber\": 1,\n\t\"pageSize\": 10,\n\t\"search\": null,\n\t\"sortColumn\": \"name\",\n\t\"sortType\": 0\n}"
         }
-    ]
-
-    //localStorage.setItem('associatedusers', JSON.stringify(users));
-    associatedusers = localStorage.getItem('associatedusers') ? JSON.parse(localStorage.getItem('associatedusers')) : [];
-    business_units = localStorage.getItem('business_units') ? JSON.parse(localStorage.getItem('business_units')) : [];
-    applications = localStorage.getItem('applications') ? JSON.parse(localStorage.getItem('applications')) : [];
-
     
-    console.log(associatedusers)
+        $.ajax(settings).done(function (response) {
+            console.log(response, "users");
     
-    generateTable();
-    generateSelect();
-    //generateSelect2()
+            users = response.result
+    
+            associatedusers = users.data
+    
+            generateTable();
+    
+        });
+
+    }
+
+
+    var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "https://dive11.azurewebsites.net/api/beta/applications/getApplications",
+        "method": "POST",
+        "headers": {
+            "content-type": "application/json",
+            "cache-control": "no-cache",
+            "postman-token": "0146efcb-e86f-0ff0-d4ea-d8647cbbfd33"
+        },
+        "processData": false,
+        "data": "{\n\t\"pageNumber\": 1,\n\t\"pageSize\": 10,\n\t\"search\": null,\n\t\"sortColumn\": \"name\",\n\t\"sortType\": 0\n}"
+    }
+
+    $.ajax(settings).done(function (response) {
+        console.log(response, "app");
+
+        apps = response.result
+
+        applications = apps.data
+
+        generateSelect2()
+
+    });
+
+
 
     function generateTable(){
         var txt='';
 
         myObj = associatedusers;
-        txt += "<table border='1'><tr><th> Username </th><th> Application Name </th><th> BU's </th><th> Role </th><th> Mail </th><th> Phone number </th><th>Actions</th></tr>"
+        txt += "<table border='1'><tr><th> Username </th><th> Role </th><th> Mail </th><th> Phone number </th><th>Actions</th></tr>"
         for (x in myObj) {
-          txt += "<tr><td>" + myObj[x].name + "</td><td>" + myObj[x].appname + "</td><td>" + myObj[x].bu + "</td><td>" + myObj[x].role + "</td><td>" + myObj[x].email + "</td>";
-          txt += "<td>" + myObj[x].contact + "</td><td><span onclick='showbu()' class='glyphicon glyphicon-info-sign' aria-hidden='true'></span>&nbsp;&nbsp;";
+          txt += "<tr><td>" + myObj[x].name + "</td><td>" + myObj[x].designation + "</td><td>" + myObj[x].email_id + "</td>";
+          txt += "<td>" + myObj[x].contact_number + "</td><td><span onclick='showbu()' class='glyphicon glyphicon-info-sign' aria-hidden='true'></span>&nbsp;&nbsp;";
           txt += "<span onclick='deletebu()' class='glyphicon glyphicon-trash' aria-hidden='true'></span></td></tr>";
         }
         txt += "</table>"    
         document.getElementById("demo").innerHTML = txt;
     }
 
-    function generateSelect(){
-        var txt = '<select id="businessId" onchange="showapps()" class="form-control">';
-        myObj = business_units;
-        for(x in myObj){
-            txt +='<option value="'+ myObj[x].name +'">'+ myObj[x].name +'</option>';
-        }
-        txt += "</select>";
-        document.getElementById("selectbu").innerHTML = txt;
-    }
 
-    showapps = (e) => {
-        generateSelect2(businessId.value)
-        console.log(applications)
-    }
-
-    function generateSelect2(bu){
+    function generateSelect2(){
         var txt = '<select  id="appId" class="form-control">';
         myObj = applications;
         for(x in myObj){
-            if(myObj[x].bu == bu) {
-                txt +='<option value="'+ myObj[x].name +'">'+ myObj[x].name +'</option>';
-            }
+                txt +='<option value="'+ myObj[x].id +'">'+ myObj[x].name +'</option>';
         }
         txt += "</select>";
         document.getElementById("selectapp").innerHTML = txt;
@@ -108,34 +107,45 @@ $(document).ready(function () {
     }
 
 
-    $('#save-list').on('click', function (e) {
-        if(username.value == "" || responsibilities.value == ""){
+    $('#save-list').on('click', function (e) { 
+        if(username.value == "" || email.value == "" || phonenumber.value == "" || address.value == "" || role.value == "" || appId.value == ""){
             alert("Please enter values")
         } else {
 
             e.preventDefault();
-
-            var today = new Date();
-            var date = today.getFullYear()+'/'+(today.getMonth()+1)+'/'+today.getDate();
-            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-            var dateTime = date+' '+time;   
-            const businessId = document.getElementById('businessId')         
+       
             var buObject = {
                 "name": username.value,
-                "bu": businessId.value,
-                "appname": appId.value,
-                "role": role.value,
+                "appId": appId.value,
+                "designation": role.value,
                 "email": email.value,
                 "contact": phonenumber.value,
-                "created_at": dateTime,
-                "created_by": "Manikanta",
-                "responsibilities": responsibilities.value,
-                "value": "U"     
+                "address": address.value
             }
-            associatedusers.push(buObject)
-            localStorage.setItem('associatedusers', JSON.stringify(associatedusers));
-            generateTable();
-            $("#entity").modal('hide');			
+
+            var settings = {
+                "async": true,
+                "crossDomain": true,
+                "url": "https://dive11.azurewebsites.net/api/beta/users/createUser",
+                "method": "POST",
+                "headers": {
+                    "content-type": "application/json",
+                    "cache-control": "no-cache",
+                    "postman-token": "0146efcb-e86f-0ff0-d4ea-d8647cbbfd33"
+                },
+                "processData": false,
+                "data": JSON.stringify(buObject)
+            }
+        
+            $.ajax(settings).done(function (response) {
+                console.log(response, "users");
+
+                if(response.status == 200){
+                    alert("Created Successfully");
+                    fetchUsers();
+                    $("#entity").modal('hide');	
+                }
+            });
         }
     });
 

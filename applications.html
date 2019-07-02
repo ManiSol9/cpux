@@ -15,10 +15,6 @@
     <link rel="stylesheet" type="text/css" href="css/themes/default.css" id="skin-switcher">
     <link rel="stylesheet" type="text/css" href="css/responsive.css">
 
-
-
-
-
     <!-- STYLESHEETS -->
     <!--[if lt IE 9]><script src="js/flot/excanvas.min.js"></script><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><script src="http://css3-mediaqueries-js.googlecode.com/svn/trunk/css3-mediaqueries.js"></script><![endif]-->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet">
@@ -115,27 +111,21 @@
                             </div>
 
                             <div class="input-group">
-                                <input type="text" id="rsgroup" class="form-control"
-                                    placeholder="Please select resource group" aria-describedby="basic-addon1">
+                                <input type="text" id="owner" class="form-control" placeholder="Application owner"
+                                    aria-describedby="basic-addon1">
                             </div>
 
                             <div class="input-group">
-                                <select class="form-control" id="type">
-                                    <option value="">Please select resource type</option>
-                                    <option value="IOT HUB">IOT HUB</option>
-                                    <option value="Event HUB">EVENT HUB</option>
-                                    <option value="COSMOS DB">COSMOS DB</option>
-                                </select>
+                                <textarea  id="description" class="form-control" placeholder="Application description"
+                                    aria-describedby="basic-addon1"></textarea>
                             </div>
 
-                            <div class="input-group">
-                                <input type="text" id="rsname" class="form-control"
-                                    placeholder="Please select resource name" aria-describedby="basic-addon1">
+                            <div class="input-group" id="selectapp">
                             </div>
-
 
                             <div class="input-group" id="selectbu">
                             </div>
+
 
                         </form>
                     </div>
@@ -189,14 +179,6 @@
             $('#Indivi_item_scroll').slimscroll({
                 height: '150px'
             });
-            // $('#testDivNested').slimscroll({
-            //     width: '300px',
-            //     height: '200px'
-            // }).parent().css({
-            //     'float': 'left',
-            //     'margin': '0 10px 10px 0'
-            // });
-
         });
     </script>
 
